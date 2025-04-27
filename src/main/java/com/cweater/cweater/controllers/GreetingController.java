@@ -2,7 +2,6 @@ package com.cweater.cweater.controllers;
 
 import com.cweater.cweater.config.OwnUserDetail;
 import com.cweater.cweater.entities.Message;
-import com.cweater.cweater.entities.User;
 import com.cweater.cweater.repository.MessageRepo;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -35,12 +34,12 @@ public class GreetingController {
 
     @PostMapping("/main")
     public String add(
-            @AuthenticationPrincipal OwnUserDetail user,
+            @AuthenticationPrincipal OwnUserDetail userDetail,
             @RequestParam String text,
             @RequestParam(defaultValue = "new") String tag,
             Map<String, Object> model
     ) {
-        Message msg = new Message(text, tag, user.getUser());
+        Message msg = new Message(text, tag, userDetail.getUser());
         messageRepo.save(msg);
 
         Iterable< Message> messages = messageRepo.findAll();

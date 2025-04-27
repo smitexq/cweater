@@ -1,25 +1,20 @@
 package com.cweater.cweater.controllers;
 
-import com.cweater.cweater.entities.Role;
 import com.cweater.cweater.entities.User;
-import com.cweater.cweater.repository.UserRepo;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import com.cweater.cweater.service.RegistrationService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import java.util.Collections;
 import java.util.Map;
-import java.util.Optional;
 
 @Controller
 public class RegistrationController {
 
-    public final UserRepo userRepo;
-
-    public RegistrationController(UserRepo userRepo) {
-        this.userRepo = userRepo;
+    private final RegistrationService service;
+    public RegistrationController(RegistrationService service) {
+        this.service = service;
     }
 
     @GetMapping("/registration")
@@ -29,16 +24,11 @@ public class RegistrationController {
 
     @PostMapping("/registration")
     public String addUser(User user, Map<String, Object> model) {
-        System.out.println("register");
-        Optional<User> userFromDb = userRepo.findByUsername(user.getUsername());
-        if (userFromDb.isPresent()) {
-            model.put("message","User exist!");
-            return "registration";
-        }
-        user.setActive(true);
-        user.setRoles(Collections.singleton(Role.USER));
-        user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
-        userRepo.save(user);
-        return "redirect:/login";
+        return service.addUser(user, model);
+    }
+
+    @GetMapping("/activate/{code}")
+    public String activate(Map<String, Object> model, @PathVariable String code) {
+        return service.activate(model, code);
     }
 }
