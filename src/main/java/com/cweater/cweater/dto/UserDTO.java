@@ -4,7 +4,6 @@ public class UserDTO {
     private String username;
     private boolean active;
     private String email;
-    private String activationCode;
 
     public String getUsername() {
         return username;
@@ -28,13 +27,5 @@ public class UserDTO {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getActivationCode() {
-        return activationCode;
-    }
-
-    public void setActivationCode(String activationCode) {
-        this.activationCode = activationCode;
     }
 }
