@@ -6,6 +6,11 @@ public class MessageDTO {
     private String tag;
     private UserDTO author;
 
+    @Override
+    public String toString() {
+        return text + "\t" + tag + "\t" + author.getUsername();
+    }
+
     public UserDTO getAuthor() {
         return author;
     }

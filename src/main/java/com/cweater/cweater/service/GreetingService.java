@@ -1,24 +1,38 @@
 package com.cweater.cweater.service;
 
 import com.cweater.cweater.config.OwnUserDetail;
+import com.cweater.cweater.dto.MessageDTO;
+import com.cweater.cweater.dto.mapping.MessageMapping;
 import com.cweater.cweater.entities.Message;
 import com.cweater.cweater.repository.MessageRepo;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 public class GreetingService {
 
     private final MessageRepo messageRepo;
-    public GreetingService(MessageRepo messageRepo) {
+    private final MessageMapping mapping;
+    public GreetingService(MessageRepo messageRepo, MessageMapping mapping) {
         this.messageRepo = messageRepo;
+        this.mapping = mapping;
     }
 
 
     public String main(Map<String, Object> model) {
         Iterable<Message> messages = messageRepo.findAll();
-        model.put("messages", messages);
+
+//        ArrayList<MessageDTO> msg = new ArrayList<>();
+//        for (Message x: messages) {
+//            msg.add(mapping.toDTO(x));
+//        }
+        List<MessageDTO> output = StreamSupport.stream(messages.spliterator(), false).map(x -> mapping.toDTO(x)).collect(Collectors.toList());
+
+        model.put("messages", output);
         return "main";
     }
 
@@ -27,7 +41,9 @@ public class GreetingService {
         messageRepo.save(msg);
 
         Iterable< Message> messages = messageRepo.findAll();
-        model.put("messages", messages);
+        List<MessageDTO> output = StreamSupport.stream(messages.spliterator(), false).map(x -> mapping.toDTO(x)).collect(Collectors.toList());
+
+        model.put("messages", output);
         return "main";
     }
 
@@ -39,7 +55,9 @@ public class GreetingService {
             messages = messageRepo.findAll();
         }
 
-        model.put("messages", messages);
+        List<MessageDTO> output = StreamSupport.stream(messages.spliterator(), false).map(x -> mapping.toDTO(x)).collect(Collectors.toList());
+
+        model.put("messages", output);
         return "main";
     }
 
