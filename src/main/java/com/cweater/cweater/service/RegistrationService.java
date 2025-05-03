@@ -1,5 +1,7 @@
 package com.cweater.cweater.service;
 
+import com.cweater.cweater.dto.UserDTO;
+import com.cweater.cweater.dto.mapping.UserMapping;
 import com.cweater.cweater.entities.Role;
 import com.cweater.cweater.entities.User;
 import com.cweater.cweater.repository.UserRepo;
@@ -21,16 +23,18 @@ public class RegistrationService {
 
     private final UserRepo userRepo;
     private final MailSender mailSender;
-    public RegistrationService(UserRepo userRepo, MailSender mailSender) {
+    private final UserMapping userMapping;
+    public RegistrationService(UserRepo userRepo, MailSender mailSender, UserMapping userMapping) {
         this.userRepo = userRepo;
         this.mailSender = mailSender;
+        this.userMapping = userMapping;
     }
 
     public String addUser(User user, Map<String, Object> model) {
         if (user.getEmail().isEmpty() || user.getUsername().isEmpty() || user.getPassword().isEmpty()) {
             model.put("message","Заполните все поля!");
             return "registration";
-        };
+        }
 
 
         Optional<User> userFromDb = userRepo.findByUsername(user.getUsername());
@@ -50,13 +54,12 @@ public class RegistrationService {
         deleteInactiveUser.sheduledDeleteUser(user.getId());
 
         //Отправка сообщения на почту
-        StringBuilder msg = new StringBuilder();
-        msg.append("Hello, ")
-                .append(user.getUsername())
-                .append("! Visit the url for activation account: http://")
-                .append(Urls.getIp())
-                .append("/activate/")
-                .append(user.getActivationCode());
+        String msg = "Hello, " +
+                user.getUsername() +
+                "! Visit the url for activation account: http://" +
+                Urls.getIp() +
+                "/activate/" +
+                user.getActivationCode();
 
         mailSender.send(user.getEmail(),
                 "Activate your account",
@@ -77,5 +80,16 @@ public class RegistrationService {
             model.put("message", String.format("Аккаунт пользователя %s активирован. Войдите в систему.", user.getUsername()));
         }
         return "login";
+    }
+
+    public String getUser(Map<String, Object> model, String username) {
+        Optional<User> userFromDB = userRepo.findByUsername(username);
+        if (!userFromDB.isPresent()) {
+            model.put("message", String.format("Пользователь %s не найден", username));
+        } else {
+            UserDTO user = userFromDB.map(usr -> userMapping.toDTO(usr)).get();
+            model.put("user", user);
+        }
+        return "get_info";
     }
 }

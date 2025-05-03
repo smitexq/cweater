@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<head>
+    <title>Get info of user</title>
+</head>
+<body>
+{{#message}}
+    {{message}}
+{{/message}}
+
+<div>
+    {{#user}}
+        <b>{{user.getUsername}}<br></b>
+        <b>{{user.getEmail}}<br></b>
+        <b>{{user.isActive}}<br></b>
+    {{/user}}
+</div>
+
+</body>
+</html>

@@ -6,7 +6,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Map;
 
@@ -33,6 +32,11 @@ public class RegistrationController {
     @GetMapping("/activate/{code}")
     public String activate(Map<String, Object> model, @PathVariable String code) {
         return service.activate(model, code);
+    }
+
+    @GetMapping("/get/{name}")
+    public String getUserByUserName(Map<String, Object> model, @PathVariable(value = "name") String username) {
+        return service.getUser(model, username);
     }
 
 //    @GetMapping("/login")
